@@ -1,0 +1,47 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Home</title>
+  <link rel="stylesheet" href="{% static 'core/style.css' %}">
+</head>
+<body>
+  <main class="card wide">
+    <header class="topbar">
+      <h1>Hi, {{ username }}</h1>
+      <div class="nav-actions">
+        <a class="nav-link" href="/u/{{ username }}/">My profile</a>
+        <button id="logout-btn" class="secondary">Log out</button>
+      </div>
+    </header>
+
+    <form id="post-form">
+      <textarea id="post-content" maxlength="280" placeholder="What's on your mind?"></textarea>
+      <div class="post-form-row">
+        <span id="char-count">0 / 280</span>
+        <button type="submit" class="small">Post</button>
+      </div>
+      <p id="error" class="error"></p>
+    </form>
+
+    <div class="search-box">
+      <input id="user-search" placeholder="Search people..." autocomplete="off">
+      <div id="search-results"></div>
+    </div>
+
+    <div class="tabs">
+      <button type="button" class="tab active" data-scope="following">Following</button>
+      <button type="button" class="tab" data-scope="all">Everyone</button>
+    </div>
+
+    <section id="feed"></section>
+  </main>
+
+  <script src="{% static 'core/auth.js' %}"></script>
+  <script src="{% static 'core/posts.js' %}"></script>
+  <script src="{% static 'core/feed.js' %}"></script>
+  <script src="{% static 'core/search.js' %}"></script>
+</body>
+</html>

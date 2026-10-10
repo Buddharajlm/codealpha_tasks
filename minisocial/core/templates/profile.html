@@ -1,0 +1,54 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>@{{ profile_username }}</title>
+  <link rel="stylesheet" href="{% static 'core/style.css' %}">
+</head>
+<body data-profile="{{ profile_username }}">
+  <main class="card wide">
+    <header class="topbar">
+      <a class="nav-link" href="/">← Home</a>
+      <button id="logout-btn" class="secondary">Log out</button>
+    </header>
+
+    <section class="profile-head">
+      <div id="avatar" class="avatar"></div>
+      <div>
+        <h1 id="profile-name">@{{ profile_username }}</h1>
+        <p id="joined" class="time"></p>
+      </div>
+      <button id="follow-btn" class="small follow" hidden>Follow</button>
+    </section>
+
+    <p id="bio" class="bio"></p>
+
+    <form id="bio-form" hidden>
+      <textarea id="bio-input" maxlength="160" placeholder="Write a short bio"></textarea>
+      <div class="post-form-row">
+        <span id="bio-count">0 / 160</span>
+        <span>
+          <button type="button" id="bio-cancel" class="secondary small">Cancel</button>
+          <button type="submit" class="small">Save</button>
+        </span>
+      </div>
+    </form>
+    <button id="edit-bio-btn" class="secondary small" hidden>Edit bio</button>
+    <p id="error" class="error"></p>
+
+    <section class="stats">
+      <div><strong id="posts-count">0</strong><span>Posts</span></div>
+      <div><strong id="followers-count">0</strong><span>Followers</span></div>
+      <div><strong id="following-count">0</strong><span>Following</span></div>
+    </section>
+
+    <section id="profile-posts"></section>
+  </main>
+
+  <script src="{% static 'core/auth.js' %}"></script>
+  <script src="{% static 'core/posts.js' %}"></script>
+  <script src="{% static 'core/profile.js' %}"></script>
+</body>
+</html>
