@@ -1,0 +1,35 @@
+{% extends 'store/base.html' %}
+
+{% block title %}Sign In - ShopZone{% endblock %}
+
+{% block content %}
+<div class="container auth-container">
+
+    <div class="auth-card">
+        <h2>Welcome Back</h2>
+        <p class="auth-subtitle">Sign in to your account to view your past orders and saved items.</p>
+
+        <form method="POST" action="{% url 'store:login' %}">
+            {% csrf_token %}
+
+            <div class="form-group" style="margin-bottom: 16px;">
+                <label for="{{ form.username.id_for_label }}">Username</label>
+                {{ form.username }}
+            </div>
+
+            <div class="form-group" style="margin-bottom: 20px;">
+                <label for="{{ form.password.id_for_label }}">Password</label>
+                {{ form.password }}
+            </div>
+
+            <button type="submit" class="btn-auth-submit">Sign In</button>
+        </form>
+
+        <div style="margin-top: 24px; text-align: center; font-size: 0.9rem; color: var(--text-muted); border-top: 1px solid var(--border-color); padding-top: 16px;">
+            Don't have an account yet? 
+            <a href="{% url 'store:register' %}" style="color: var(--primary); font-weight: 600;">Sign up here</a>
+        </div>
+    </div>
+
+</div>
+{% endblock %}

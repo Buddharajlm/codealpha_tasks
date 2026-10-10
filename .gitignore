@@ -1,0 +1,23 @@
+# Virtual Environments
+.venv/
+venv/
+env/
+ENV/
+
+# Python bytecode & cache
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+
+# SQLite databases & media
+*.sqlite3
+*.sqlite3-journal
+media/
+staticfiles/
+
+# IDE & OS
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db

@@ -1,0 +1,57 @@
+{% extends 'store/base.html' %}
+
+{% block title %}Create Account - ShopZone{% endblock %}
+
+{% block content %}
+<div class="container auth-container">
+
+    <div class="auth-card">
+        <h2>Create an Account</h2>
+        <p class="auth-subtitle">Join ShopZone to track orders, manage addresses, and experience instant checkout.</p>
+
+        <form method="POST" action="{% url 'store:register' %}">
+            {% csrf_token %}
+
+            <div class="form-group" style="margin-bottom: 14px;">
+                <label for="{{ form.username.id_for_label }}">Username *</label>
+                {{ form.username }}
+                {% if form.username.errors %}
+                <small style="color: var(--danger);">{{ form.username.errors.0 }}</small>
+                {% endif %}
+            </div>
+
+            <div class="form-group" style="margin-bottom: 14px;">
+                <label for="{{ form.email.id_for_label }}">Email Address *</label>
+                {{ form.email }}
+                {% if form.email.errors %}
+                <small style="color: var(--danger);">{{ form.email.errors.0 }}</small>
+                {% endif %}
+            </div>
+
+            <div class="form-group" style="margin-bottom: 14px;">
+                <label for="{{ form.password.id_for_label }}">Password *</label>
+                {{ form.password }}
+                {% if form.password.errors %}
+                <small style="color: var(--danger);">{{ form.password.errors.0 }}</small>
+                {% endif %}
+            </div>
+
+            <div class="form-group" style="margin-bottom: 20px;">
+                <label for="{{ form.confirm_password.id_for_label }}">Confirm Password *</label>
+                {{ form.confirm_password }}
+                {% if form.confirm_password.errors %}
+                <small style="color: var(--danger);">{{ form.confirm_password.errors.0 }}</small>
+                {% endif %}
+            </div>
+
+            <button type="submit" class="btn-auth-submit">Create Account</button>
+        </form>
+
+        <div style="margin-top: 24px; text-align: center; font-size: 0.9rem; color: var(--text-muted); border-top: 1px solid var(--border-color); padding-top: 16px;">
+            Already have an account? 
+            <a href="{% url 'store:login' %}" style="color: var(--primary); font-weight: 600;">Sign in here</a>
+        </div>
+    </div>
+
+</div>
+{% endblock %}

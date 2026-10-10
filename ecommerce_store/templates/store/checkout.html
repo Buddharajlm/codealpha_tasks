@@ -1,0 +1,173 @@
+{% extends 'store/base.html' %}
+
+{% block title %}Checkout & Order Processing - ShopZone{% endblock %}
+
+{% block content %}
+<div class="container">
+
+    <div style="margin: 28px 0 20px 0;">
+        <h1 style="font-size: 1.8rem; font-weight: 800;">Order Processing & Checkout</h1>
+        <p style="color: var(--text-muted); font-size: 0.95rem;">Provide your delivery address and choose a payment method to complete your purchase.</p>
+    </div>
+
+    <form method="POST" action="{% url 'store:checkout' %}">
+        {% csrf_token %}
+
+        <div class="checkout-layout">
+
+            <!-- Delivery & Payment Information -->
+            <div class="checkout-card">
+                <h2 class="section-heading">
+                    <span>📍</span> 1. Shipping Details
+                </h2>
+
+                <div class="form-grid">
+                    <div class="form-group form-group-full">
+                        <label for="{{ form.full_name.id_for_label }}">Full Name *</label>
+                        {{ form.full_name }}
+                        {% if form.full_name.errors %}
+                        <small style="color: var(--danger);">{{ form.full_name.errors.0 }}</small>
+                        {% endif %}
+                    </div>
+
+                    <div class="form-group">
+                        <label for="{{ form.email.id_for_label }}">Email Address *</label>
+                        {{ form.email }}
+                        {% if form.email.errors %}
+                        <small style="color: var(--danger);">{{ form.email.errors.0 }}</small>
+                        {% endif %}
+                    </div>
+
+                    <div class="form-group">
+                        <label for="{{ form.phone.id_for_label }}">Phone Number *</label>
+                        {{ form.phone }}
+                        {% if form.phone.errors %}
+                        <small style="color: var(--danger);">{{ form.phone.errors.0 }}</small>
+                        {% endif %}
+                    </div>
+
+                    <div class="form-group form-group-full">
+                        <label for="{{ form.address.id_for_label }}">Street Address *</label>
+                        {{ form.address }}
+                        {% if form.address.errors %}
+                        <small style="color: var(--danger);">{{ form.address.errors.0 }}</small>
+                        {% endif %}
+                    </div>
+
+                    <div class="form-group">
+                        <label for="{{ form.city.id_for_label }}">City *</label>
+                        {{ form.city }}
+                        {% if form.city.errors %}
+                        <small style="color: var(--danger);">{{ form.city.errors.0 }}</small>
+                        {% endif %}
+                    </div>
+
+                    <div class="form-group">
+                        <label for="{{ form.state.id_for_label }}">State / Province</label>
+                        {{ form.state }}
+                    </div>
+
+                    <div class="form-group">
+                        <label for="{{ form.postal_code.id_for_label }}">Postal / ZIP Code *</label>
+                        {{ form.postal_code }}
+                        {% if form.postal_code.errors %}
+                        <small style="color: var(--danger);">{{ form.postal_code.errors.0 }}</small>
+                        {% endif %}
+                    </div>
+
+                    <div class="form-group form-group-full">
+                        <label for="{{ form.notes.id_for_label }}">Delivery Notes (Optional)</label>
+                        {{ form.notes }}
+                    </div>
+                </div>
+
+                <!-- Payment Method Selection -->
+                <div class="payment-methods-box">
+                    <h2 class="section-heading">
+                        <span>💳</span> 2. Payment Method
+                    </h2>
+
+                    <div class="payment-option-card">
+                        <input type="radio" name="payment_method" value="COD" id="pay_cod" checked>
+                        <label for="pay_cod" style="cursor: pointer; width: 100%;">
+                            <strong>💵 Cash on Delivery (COD)</strong>
+                            <div style="font-size: 0.85rem; color: var(--text-muted);">Pay with cash upon physical delivery at your doorstep</div>
+                        </label>
+                    </div>
+
+                    <div class="payment-option-card">
+                        <input type="radio" name="payment_method" value="CARD" id="pay_card">
+                        <label for="pay_card" style="cursor: pointer; width: 100%;">
+                            <strong>💳 Credit / Debit Card (Demo Simulation)</strong>
+                            <div style="font-size: 0.85rem; color: var(--text-muted);">Simulated instant transaction approval for college demo</div>
+                        </label>
+                    </div>
+
+                    <div class="payment-option-card">
+                        <input type="radio" name="payment_method" value="UPI" id="pay_upi">
+                        <label for="pay_upi" style="cursor: pointer; width: 100%;">
+                            <strong>📱 UPI / QR Code / NetBanking (Demo)</strong>
+                            <div style="font-size: 0.85rem; color: var(--text-muted);">Simulated digital wallet instant processing</div>
+                        </label>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- Sticky Order Summary -->
+            <div class="summary-card">
+                <h3 class="summary-title">Order Review</h3>
+
+                <!-- Mini Item List -->
+                <div style="max-height: 240px; overflow-y: auto; margin-bottom: 16px; padding-right: 4px;">
+                    {% for item in cart %}
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; font-size: 0.9rem;">
+                        <div style="display: flex; align-items: center; gap: 10px;">
+                            <img src="{{ item.product.display_image }}" alt="" style="width: 40px; height: 40px; border-radius: 4px; object-fit: cover;">
+                            <div>
+                                <div style="font-weight: 600; line-height: 1.2;">{{ item.product.name|truncatechars:24 }}</div>
+                                <div style="font-size: 0.8rem; color: var(--text-muted);">Qty: {{ item.quantity }}</div>
+                            </div>
+                        </div>
+                        <div style="font-weight: 700;">${{ item.total_price }}</div>
+                    </div>
+                    {% endfor %}
+                </div>
+
+                <div class="summary-row">
+                    <span>Subtotal</span>
+                    <span>${{ cart.get_subtotal_price }}</span>
+                </div>
+
+                <div class="summary-row">
+                    <span>Shipping</span>
+                    <span>
+                        {% if cart.get_shipping_cost == 0 %}
+                            <span style="color: var(--accent); font-weight: 700;">FREE</span>
+                        {% else %}
+                            ${{ cart.get_shipping_cost }}
+                        {% endif %}
+                    </span>
+                </div>
+
+                <div class="summary-total">
+                    <span>Total Amount</span>
+                    <span>${{ cart.get_total_price }}</span>
+                </div>
+
+                <button type="submit" class="btn-checkout" style="background-color: var(--primary);">
+                    <span>🔒 Place Order Now</span>
+                </button>
+
+                <div style="text-align: center; margin-top: 14px;">
+                    <a href="{% url 'store:cart_detail' %}" style="font-size: 0.85rem; color: var(--text-muted); text-decoration: underline;">
+                        Edit Cart Items
+                    </a>
+                </div>
+            </div>
+
+        </div>
+    </form>
+
+</div>
+{% endblock %}

@@ -1,0 +1,150 @@
+{% extends 'store/base.html' %}
+
+{% block title %}{{ product.name }} - ShopZone{% endblock %}
+
+{% block content %}
+<div class="container">
+
+    <!-- Breadcrumbs -->
+    <nav class="breadcrumbs">
+        <a href="{% url 'store:product_list' %}">Home</a>
+        <span>/</span>
+        <a href="{% url 'store:product_list_by_category' product.category.slug %}">{{ product.category.name }}</a>
+        <span>/</span>
+        <span style="color: var(--text-main); font-weight: 500;">{{ product.name }}</span>
+    </nav>
+
+    <!-- Main Detail Layout -->
+    <div class="product-detail-layout">
+
+        <!-- Product Image Showcase -->
+        <div class="detail-gallery">
+            <img src="{{ product.display_image }}" alt="{{ product.name }}">
+            {% if product.discount_percent > 0 %}
+            <span class="card-badge badge-discount" style="top: 20px; left: 20px; font-size: 0.85rem;">
+                SAVE {{ product.discount_percent }}%
+            </span>
+            {% endif %}
+        </div>
+
+        <!-- Product Details & Actions -->
+        <div class="detail-info">
+            <a href="{% url 'store:product_list_by_category' product.category.slug %}" class="detail-category">
+                {{ product.category.icon }} {{ product.category.name }}
+            </a>
+
+            <h1 class="detail-title">{{ product.name }}</h1>
+
+            <div class="detail-meta">
+                <div class="card-rating" style="margin-bottom: 0;">
+                    <span>★ {{ product.rating }}</span>
+                    <span>({{ product.reviews_count }} customer ratings)</span>
+                </div>
+
+                {% if product.in_stock %}
+                <span class="stock-status in-stock">
+                    <span>●</span> In Stock ({{ product.stock }} units available)
+                </span>
+                {% else %}
+                <span class="stock-status out-of-stock">
+                    <span>●</span> Currently Out of Stock
+                </span>
+                {% endif %}
+            </div>
+
+            <!-- Price Display -->
+            <div class="detail-price-box">
+                <span class="detail-current-price">${{ product.price }}</span>
+                {% if product.original_price %}
+                <span class="detail-original-price">${{ product.original_price }}</span>
+                <span class="detail-savings">Save ${{ product.original_price|floatformat:2 }}</span>
+                {% endif %}
+            </div>
+
+            <!-- Description -->
+            <p class="detail-description">{{ product.description }}</p>
+
+            <!-- Add to Cart Form -->
+            {% if product.in_stock %}
+            <form action="{% url 'store:cart_add' product.id %}" method="POST" class="detail-actions-form ajax-cart-form">
+                {% csrf_token %}
+                <div class="quantity-control">
+                    <label for="product-qty">Quantity:</label>
+                    <div class="qty-stepper">
+                        <button type="button" class="qty-btn qty-decrement">-</button>
+                        <input type="number" id="product-qty" name="quantity" value="1" min="1" max="{{ product.stock }}" class="qty-input">
+                        <button type="button" class="qty-btn qty-increment">+</button>
+                    </div>
+                </div>
+
+                <div class="detail-buttons">
+                    <button type="submit" class="btn-primary-large">
+                        <span>🛒</span> Add to Shopping Cart
+                    </button>
+                </div>
+            </form>
+            {% else %}
+            <div class="alert alert-warning" style="margin-top: 20px;">
+                This product is currently back-ordered. Check back soon!
+            </div>
+            {% endif %}
+
+            <!-- Value Features -->
+            <div class="product-features-grid">
+                <div class="feature-box">
+                    <span class="icon">🚚</span>
+                    <div>
+                        <strong>Fast Dispatch</strong>
+                        <div>Ships within 24 hours</div>
+                    </div>
+                </div>
+                <div class="feature-box">
+                    <span class="icon">🛡️</span>
+                    <div>
+                        <strong>Buyer Protection</strong>
+                        <div>30-day money back</div>
+                    </div>
+                </div>
+                <div class="feature-box">
+                    <span class="icon">💳</span>
+                    <div>
+                        <strong>Safe Payments</strong>
+                        <div>COD / Demo Cards</div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+
+    <!-- Related Products -->
+    {% if related_products %}
+    <div style="margin-top: 48px;">
+        <h2 style="font-size: 1.5rem; font-weight: 800; margin-bottom: 20px;">You May Also Like</h2>
+        <div class="product-grid">
+            {% for rel in related_products %}
+            <div class="product-card">
+                <div class="card-img-wrapper">
+                    <a href="{% url 'store:product_detail' rel.slug %}">
+                        <img src="{{ rel.display_image }}" alt="{{ rel.name }}">
+                    </a>
+                </div>
+                <div class="card-body">
+                    <span class="card-category">{{ rel.category.name }}</span>
+                    <h3 class="card-title">
+                        <a href="{% url 'store:product_detail' rel.slug %}">{{ rel.name }}</a>
+                    </h3>
+                    <div class="card-footer">
+                        <span class="current-price">${{ rel.price }}</span>
+                        <a href="{% url 'store:product_detail' rel.slug %}" class="btn-add-cart" style="text-decoration: none;">View</a>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    {% endif %}
+
+</div>
+{% endblock %}

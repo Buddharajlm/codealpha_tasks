@@ -1,0 +1,103 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}ShopZone - Modern E-Commerce Store{% endblock %}</title>
+    <!-- Stylesheet -->
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    {% block extra_css %}{% endblock %}
+</head>
+<body>
+
+    <!-- Main Navigation Header -->
+    <header class="navbar">
+        <div class="container">
+            <!-- Brand Logo -->
+            <a href="{% url 'store:product_list' %}" class="brand-logo">
+                <span style="font-size: 1.6rem;">⚡</span>
+                <span>ShopZone</span>
+                <span class="brand-badge">Demo</span>
+            </a>
+
+            <!-- Search Bar -->
+            <div class="nav-search">
+                <form action="{% url 'store:product_list' %}" method="GET">
+                    <span class="search-icon">🔍</span>
+                    <input type="text" name="q" placeholder="Search gadgets, apparel, books..." value="{{ search_query|default:'' }}">
+                </form>
+            </div>
+
+            <!-- Navigation Links & User Menu -->
+            <ul class="nav-links">
+                <li>
+                    <a href="{% url 'store:product_list' %}" class="nav-link">Catalog</a>
+                </li>
+
+                {% if user.is_authenticated %}
+                    <li>
+                        <a href="{% url 'store:my_orders' %}" class="nav-link">My Orders</a>
+                    </li>
+                    {% if user.is_staff %}
+                    <li>
+                        <a href="/admin/" target="_blank" class="nav-link" title="Open Django Admin">Admin ⚙️</a>
+                    </li>
+                    {% endif %}
+                    <li>
+                        <a href="{% url 'store:logout' %}" class="nav-link">Logout ({{ user.username }})</a>
+                    </li>
+                {% else %}
+                    <li>
+                        <a href="{% url 'store:login' %}" class="nav-link">Login</a>
+                    </li>
+                    <li>
+                        <a href="{% url 'store:register' %}" class="nav-link">Sign Up</a>
+                    </li>
+                {% endif %}
+
+                <!-- Shopping Cart Pill -->
+                <li>
+                    <a href="{% url 'store:cart_detail' %}" class="nav-cart-btn" id="nav-cart-button">
+                        <span>🛒</span>
+                        <span>Cart</span>
+                        <span class="cart-count" id="cart-count-badge">{{ cart|length }}</span>
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </header>
+
+    <!-- Flash Messages -->
+    {% if messages %}
+    <div class="container messages-container">
+        {% for message in messages %}
+        <div class="alert alert-{{ message.tags }}">
+            <span>{{ message }}</span>
+            <button type="button" class="alert-close">&times;</button>
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    <!-- Main Content Area -->
+    <main>
+        {% block content %}{% endblock %}
+    </main>
+
+    <!-- Footer -->
+    <footer>
+        <div class="container">
+            <p>&copy; 2026 ShopZone College Project. Built with Django, HTML, CSS & JavaScript.</p>
+            <p>
+                <a href="/admin/" target="_blank" style="text-decoration: underline;">Django Admin Portal</a> &bull;
+                <a href="{% url 'store:product_list' %}" style="text-decoration: underline;">Home</a>
+            </p>
+        </div>
+    </footer>
+
+    <!-- Scripts -->
+    <script src="{% static 'js/main.js' %}"></script>
+    {% block extra_js %}{% endblock %}
+</body>
+</html>

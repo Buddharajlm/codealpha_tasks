@@ -1,0 +1,123 @@
+{% extends 'store/base.html' %}
+
+{% block title %}ShopZone - Discover Featured Products{% endblock %}
+
+{% block content %}
+<div class="container">
+
+    <!-- Hero Banner for Project Showcase -->
+    <div class="hero-banner">
+        <div class="hero-content">
+            <h1>Discover Tech & Lifestyle Essentials</h1>
+            <p>Experience smooth shopping, instant cart calculations, secure order processing, and full admin control.</p>
+            <div class="hero-badges">
+                <span class="hero-badge-item">🚀 Instant Checkout</span>
+                <span class="hero-badge-item">📦 Free Delivery on Orders > $50</span>
+                <span class="hero-badge-item">🛡️ College Project Prototype</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Catalog Controls: Categories & Sorting -->
+    <div class="catalog-header">
+        <div class="category-pills">
+            <a href="{% url 'store:product_list' %}" class="category-pill {% if not category %}active{% endif %}">
+                <span>🌟 All Products</span>
+            </a>
+            {% for cat in nav_categories %}
+            <a href="{% url 'store:product_list_by_category' cat.slug %}" class="category-pill {% if category.slug == cat.slug %}active{% endif %}">
+                <span>{{ cat.icon }}</span>
+                <span>{{ cat.name }}</span>
+            </a>
+            {% endfor %}
+        </div>
+
+        <div class="filter-sort-controls">
+            <form method="GET" action="" id="sortForm">
+                {% if search_query %}
+                <input type="hidden" name="q" value="{{ search_query }}">
+                {% endif %}
+                <select name="sort" class="sort-select" onchange="this.form.submit()">
+                    <option value="newest" {% if sort_by == 'newest' %}selected{% endif %}>Newest First</option>
+                    <option value="price_low" {% if sort_by == 'price_low' %}selected{% endif %}>Price: Low to High</option>
+                    <option value="price_high" {% if sort_by == 'price_high' %}selected{% endif %}>Price: High to Low</option>
+                    <option value="name" {% if sort_by == 'name' %}selected{% endif %}>Product Name (A-Z)</option>
+                </select>
+            </form>
+        </div>
+    </div>
+
+    <!-- Search Query Notice -->
+    {% if search_query %}
+    <p style="margin-bottom: 20px; font-size: 0.95rem; color: var(--text-muted);">
+        Showing search results for "<strong>{{ search_query }}</strong>" ({{ total_products }} items found).
+        <a href="{% url 'store:product_list' %}" style="color: var(--primary); margin-left: 8px;">Clear search</a>
+    </p>
+    {% endif %}
+
+    <!-- Product Grid -->
+    {% if products %}
+    <div class="product-grid">
+        {% for prod in products %}
+        <div class="product-card">
+            <!-- Thumbnail & Badges -->
+            <div class="card-img-wrapper">
+                <a href="{% url 'store:product_detail' prod.slug %}">
+                    <img src="{{ prod.display_image }}" alt="{{ prod.name }}" loading="lazy">
+                </a>
+                {% if not prod.in_stock %}
+                    <span class="card-badge badge-outofstock">Sold Out</span>
+                {% elif prod.discount_percent > 0 %}
+                    <span class="card-badge badge-discount">{{ prod.discount_percent }}% OFF</span>
+                {% endif %}
+            </div>
+
+            <!-- Card Information -->
+            <div class="card-body">
+                <span class="card-category">{{ prod.category.name }}</span>
+                <h3 class="card-title">
+                    <a href="{% url 'store:product_detail' prod.slug %}">{{ prod.name }}</a>
+                </h3>
+
+                <div class="card-rating">
+                    <span>★ {{ prod.rating }}</span>
+                    <span>({{ prod.reviews_count }} reviews)</span>
+                </div>
+
+                <div class="card-footer">
+                    <div class="card-pricing">
+                        <span class="current-price">${{ prod.price }}</span>
+                        {% if prod.original_price %}
+                        <span class="original-price">${{ prod.original_price }}</span>
+                        {% endif %}
+                    </div>
+
+                    <!-- Add to Cart Action -->
+                    {% if prod.in_stock %}
+                    <form action="{% url 'store:cart_add' prod.id %}" method="POST" class="ajax-cart-form">
+                        {% csrf_token %}
+                        <input type="hidden" name="quantity" value="1">
+                        <button type="submit" class="btn-add-cart" title="Add to cart">
+                            <span>🛒 Add</span>
+                        </button>
+                    </form>
+                    {% else %}
+                    <button class="btn-add-cart" disabled>Out of Stock</button>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <!-- Empty Search or Category Result -->
+    <div class="empty-cart-state" style="margin: 40px 0;">
+        <div class="empty-cart-icon">🔍</div>
+        <h3>No products found</h3>
+        <p style="color: var(--text-muted); margin: 8px 0 20px 0;">We couldn't find any products matching your criteria.</p>
+        <a href="{% url 'store:product_list' %}" class="btn-primary-large" style="display: inline-flex; width: auto; padding: 10px 24px;">View All Products</a>
+    </div>
+    {% endif %}
+
+</div>
+{% endblock %}

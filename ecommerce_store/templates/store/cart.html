@@ -1,0 +1,141 @@
+{% extends 'store/base.html' %}
+
+{% block title %}Your Shopping Cart - ShopZone{% endblock %}
+
+{% block content %}
+<div class="container">
+
+    <div style="margin: 28px 0 20px 0;">
+        <h1 style="font-size: 1.8rem; font-weight: 800;">Shopping Cart</h1>
+        <p style="color: var(--text-muted); font-size: 0.95rem;">Review your chosen items before proceeding to secure checkout.</p>
+    </div>
+
+    {% if cart|length > 0 %}
+    <div class="cart-layout">
+
+        <!-- Cart Items List -->
+        <div class="cart-card">
+            <table class="cart-table">
+                <thead>
+                    <tr>
+                        <th>Product</th>
+                        <th>Price</th>
+                        <th>Quantity</th>
+                        <th>Subtotal</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for item in cart %}
+                    <tr class="cart-item-row">
+                        <!-- Product thumbnail & title -->
+                        <td>
+                            <div class="cart-product-info">
+                                <img src="{{ item.product.display_image }}" alt="{{ item.product.name }}" class="cart-product-thumb">
+                                <div>
+                                    <div class="cart-product-title">
+                                        <a href="{% url 'store:product_detail' item.product.slug %}">{{ item.product.name }}</a>
+                                    </div>
+                                    <div class="cart-product-cat">{{ item.product.category.name }}</div>
+                                </div>
+                            </div>
+                        </td>
+
+                        <!-- Unit Price -->
+                        <td class="cart-price">
+                            ${{ item.price }}
+                        </td>
+
+                        <!-- Quantity Selector Form -->
+                        <td>
+                            <form action="{% url 'store:cart_update' item.product.id %}" method="POST" class="cart-item-update-form" style="display: inline-flex; align-items: center; gap: 6px;">
+                                {% csrf_token %}
+                                <div class="qty-stepper" style="height: 34px;">
+                                    <input type="number" name="quantity" value="{{ item.quantity }}" min="1" max="{{ item.product.stock }}" class="qty-input cart-qty-input" style="height: 32px; width: 55px;">
+                                </div>
+                                <button type="submit" class="btn-add-cart" style="padding: 5px 10px; font-size: 0.8rem;" title="Save changes">Update</button>
+                            </form>
+                        </td>
+
+                        <!-- Subtotal -->
+                        <td class="cart-price" style="font-weight: 700; color: var(--primary);">
+                            ${{ item.total_price }}
+                        </td>
+
+                        <!-- Remove Action -->
+                        <td>
+                            <form action="{% url 'store:cart_remove' item.product.id %}" method="POST" onsubmit="return confirm('Remove {{ item.product.name }} from cart?');">
+                                {% csrf_token %}
+                                <button type="submit" class="btn-remove-item" title="Remove item">
+                                    🗑️
+                                </button>
+                            </form>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+
+            <div style="margin-top: 20px; display: flex; justify-content: space-between; align-items: center;">
+                <a href="{% url 'store:product_list' %}" style="color: var(--primary); font-weight: 600; font-size: 0.95rem;">
+                    &larr; Continue Shopping
+                </a>
+            </div>
+        </div>
+
+        <!-- Summary & Checkout Sidebar -->
+        <div class="summary-card">
+            <h3 class="summary-title">Order Summary</h3>
+
+            <div class="summary-row">
+                <span>Items ({{ cart|length }} total)</span>
+                <span>${{ cart.get_subtotal_price }}</span>
+            </div>
+
+            <div class="summary-row">
+                <span>Standard Shipping</span>
+                <span>
+                    {% if cart.get_shipping_cost == 0 %}
+                        <span style="color: var(--accent); font-weight: 700;">FREE</span>
+                    {% else %}
+                        ${{ cart.get_shipping_cost }}
+                    {% endif %}
+                </span>
+            </div>
+
+            {% if cart.get_subtotal_price < 50 %}
+            <div style="font-size: 0.8rem; background: #f0fdf4; color: #166534; padding: 8px 12px; border-radius: 6px; margin: 10px 0;">
+                💡 Add <strong>${{ 50|floatformat:2 }}</strong> or more to your cart to qualify for FREE shipping!
+            </div>
+            {% endif %}
+
+            <div class="summary-total">
+                <span>Grand Total</span>
+                <span>${{ cart.get_total_price }}</span>
+            </div>
+
+            <a href="{% url 'store:checkout' %}" class="btn-checkout">
+                <span>Proceed to Checkout</span>
+                <span>&rarr;</span>
+            </a>
+
+            <div style="margin-top: 20px; text-align: center; font-size: 0.8rem; color: var(--text-muted);">
+                🔒 256-Bit SSL Demo Checkout &bull; Safe & Verified
+            </div>
+        </div>
+
+    </div>
+    {% else %}
+    <!-- Empty Cart Screen -->
+    <div class="empty-cart-state" style="margin: 40px auto; max-width: 600px;">
+        <div class="empty-cart-icon">🛒</div>
+        <h2 style="font-size: 1.5rem; font-weight: 800; margin-bottom: 8px;">Your Shopping Cart is Empty</h2>
+        <p style="color: var(--text-muted); margin-bottom: 24px;">Looks like you haven't added anything to your cart yet. Browse our top featured products and discover great deals.</p>
+        <a href="{% url 'store:product_list' %}" class="btn-primary-large" style="display: inline-flex; width: auto; padding: 12px 28px;">
+            Start Shopping Now
+        </a>
+    </div>
+    {% endif %}
+
+</div>
+{% endblock %}

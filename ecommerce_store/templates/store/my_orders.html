@@ -1,0 +1,67 @@
+{% extends 'store/base.html' %}
+
+{% block title %}My Orders - ShopZone{% endblock %}
+
+{% block content %}
+<div class="container">
+
+    <div style="margin: 28px 0 20px 0;">
+        <h1 style="font-size: 1.8rem; font-weight: 800;">My Order History</h1>
+        <p style="color: var(--text-muted); font-size: 0.95rem;">Track the real-time fulfillment status of your recent purchases.</p>
+    </div>
+
+    {% if orders %}
+    <div style="display: flex; flex-direction: column; gap: 20px;">
+        {% for order in orders %}
+        <div class="cart-card" style="padding: 24px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; border-bottom: 1px solid var(--border-color); padding-bottom: 14px; margin-bottom: 16px;">
+                <div>
+                    <span style="font-size: 0.8rem; color: var(--text-muted); text-transform: uppercase; font-weight: 700;">Order ID</span>
+                    <div style="font-weight: 800; font-family: monospace; font-size: 1.1rem; color: var(--primary);">{{ order.order_number }}</div>
+                </div>
+
+                <div>
+                    <span style="font-size: 0.8rem; color: var(--text-muted); text-transform: uppercase; font-weight: 700;">Placed On</span>
+                    <div style="font-weight: 600;">{{ order.created_at|date:"M d, Y" }}</div>
+                </div>
+
+                <div>
+                    <span style="font-size: 0.8rem; color: var(--text-muted); text-transform: uppercase; font-weight: 700;">Total</span>
+                    <div style="font-weight: 800; color: var(--secondary);">${{ order.total_amount }}</div>
+                </div>
+
+                <div>
+                    <span class="stock-status in-stock" style="font-size: 0.85rem;">{{ order.status }}</span>
+                </div>
+
+                <div>
+                    <a href="{% url 'store:order_confirmation' order.order_number %}" class="btn-add-cart" style="text-decoration: none; font-size: 0.85rem;">
+                        View Receipt &rarr;
+                    </a>
+                </div>
+            </div>
+
+            <!-- Items preview -->
+            <div style="display: flex; flex-wrap: wrap; gap: 16px;">
+                {% for item in order.items.all %}
+                <div style="display: flex; align-items: center; gap: 8px; font-size: 0.9rem; background: #f8fafc; padding: 6px 12px; border-radius: 6px; border: 1px solid var(--border-color);">
+                    <span style="font-weight: 600;">{{ item.product_name }}</span>
+                    <span style="color: var(--text-muted);">x{{ item.quantity }}</span>
+                    <span style="font-weight: 700; color: var(--secondary);">${{ item.get_cost }}</span>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <div class="empty-cart-state" style="margin: 40px auto; max-width: 500px;">
+        <div class="empty-cart-icon">📦</div>
+        <h2 style="font-size: 1.4rem; font-weight: 800; margin-bottom: 8px;">No Orders Placed Yet</h2>
+        <p style="color: var(--text-muted); margin-bottom: 20px;">You haven't placed any orders with this account yet.</p>
+        <a href="{% url 'store:product_list' %}" class="btn-primary-large" style="display: inline-flex; width: auto; padding: 10px 24px;">Browse Products</a>
+    </div>
+    {% endif %}
+
+</div>
+{% endblock %}

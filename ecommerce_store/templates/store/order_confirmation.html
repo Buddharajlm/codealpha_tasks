@@ -1,0 +1,98 @@
+{% extends 'store/base.html' %}
+
+{% block title %}Order Confirmation - {{ order.order_number }} - ShopZone{% endblock %}
+
+{% block content %}
+<div class="container confirmation-container">
+
+    <div class="receipt-card">
+
+        <!-- Header / Success Check -->
+        <div class="receipt-success-badge">
+            <div class="success-check-icon">✓</div>
+            <h1 style="font-size: 1.8rem; font-weight: 800; color: var(--secondary);">Thank You for Your Order!</h1>
+            <p style="color: var(--text-muted); font-size: 0.95rem; margin-top: 6px;">
+                Your order has been received and is being processed for dispatch.
+            </p>
+            <div class="order-badge-id">Order Reference: {{ order.order_number }}</div>
+        </div>
+
+        <!-- Order Summary & Shipping Details -->
+        <div class="receipt-details-grid">
+            <div>
+                <strong style="display: block; font-size: 0.85rem; color: var(--text-muted); text-transform: uppercase;">Customer Details</strong>
+                <div style="font-weight: 600; margin-top: 4px;">{{ order.full_name }}</div>
+                <div style="font-size: 0.9rem; color: var(--text-muted);">{{ order.email }}</div>
+                <div style="font-size: 0.9rem; color: var(--text-muted);">{{ order.phone }}</div>
+            </div>
+
+            <div>
+                <strong style="display: block; font-size: 0.85rem; color: var(--text-muted); text-transform: uppercase;">Shipping Destination</strong>
+                <div style="margin-top: 4px; font-size: 0.95rem;">{{ order.address }}</div>
+                <div style="font-size: 0.9rem; color: var(--text-muted);">{{ order.city }}, {{ order.state }} {{ order.postal_code }}</div>
+            </div>
+
+            <div>
+                <strong style="display: block; font-size: 0.85rem; color: var(--text-muted); text-transform: uppercase;">Payment Method</strong>
+                <div style="font-weight: 600; margin-top: 4px;">{{ order.get_payment_method_display }}</div>
+                <span class="stock-status in-stock" style="margin-top: 4px; font-size: 0.75rem;">Status: {{ order.status }}</span>
+            </div>
+
+            <div>
+                <strong style="display: block; font-size: 0.85rem; color: var(--text-muted); text-transform: uppercase;">Date Placed</strong>
+                <div style="margin-top: 4px; font-size: 0.95rem;">{{ order.created_at|date:"F j, Y, g:i a" }}</div>
+            </div>
+        </div>
+
+        <!-- Ordered Items Table -->
+        <div style="margin-top: 24px;">
+            <h3 style="font-size: 1.1rem; font-weight: 800; margin-bottom: 12px; border-bottom: 1px solid var(--border-color); padding-bottom: 8px;">
+                Purchased Items
+            </h3>
+
+            {% for item in order.items.all %}
+            <div class="receipt-item-line">
+                <div>
+                    <span style="font-weight: 600;">{{ item.product_name }}</span>
+                    <span style="color: var(--text-muted); font-size: 0.85rem; margin-left: 6px;">&times; {{ item.quantity }}</span>
+                </div>
+                <div style="font-weight: 700;">${{ item.get_cost }}</div>
+            </div>
+            {% endfor %}
+
+            <div class="receipt-item-line" style="margin-top: 10px;">
+                <span style="color: var(--text-muted);">Subtotal</span>
+                <span>${{ order.subtotal }}</span>
+            </div>
+
+            <div class="receipt-item-line">
+                <span style="color: var(--text-muted);">Shipping</span>
+                <span>
+                    {% if order.shipping_cost == 0 %}
+                    <span style="color: var(--accent); font-weight: 700;">FREE</span>
+                    {% else %}
+                    ${{ order.shipping_cost }}
+                    {% endif %}
+                </span>
+            </div>
+
+            <div class="receipt-item-line" style="font-size: 1.2rem; font-weight: 800; color: var(--secondary); border-top: 2px dashed var(--border-color); padding-top: 14px;">
+                <span>Total Paid</span>
+                <span>${{ order.total_amount }}</span>
+            </div>
+        </div>
+
+        <!-- Action Buttons -->
+        <div style="display: flex; gap: 14px; margin-top: 32px; justify-content: center;" class="no-print">
+            <button onclick="window.print()" class="btn-primary-large" style="background-color: var(--secondary); max-width: 200px;">
+                <span>🖨️</span> Print Receipt
+            </button>
+            <a href="{% url 'store:product_list' %}" class="btn-primary-large" style="max-width: 220px; text-decoration: none;">
+                <span>🛍️</span> Return to Store
+            </a>
+        </div>
+
+    </div>
+
+</div>
+{% endblock %}
